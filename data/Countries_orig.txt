@@ -1,0 +1,46 @@
+{
+		"USD": {
+			"name": "USD",
+			"longName": "US Dollar",
+			"flagImage": "flags/united-states-of-america-flag-icon-32.png",
+			"isBase": true
+			},
+		"EUR": {
+			"name": "EUR",
+			"longName": "Euro",
+			"flagImage": "flags/EU.png",
+			"isBase": true
+			},
+		"JPY": {
+			"name": "JPY",
+			"longName": "Japan Yen",
+			"flagImage": "flags/japan-flag-icon-32.png",
+			"isBase": true
+			},
+		"GBP": {
+			"name": "GBP",
+			"longName": "British Pound",
+			"flagImage": "flags/united-kingdom-flag-icon-32.png",
+			"isBase": false
+			},
+		"CHF": {
+				"name": "CHF",
+				"longName": "Swiss Franc",
+				"flagImage": "flags/switzerland-flag-icon-32.png",
+				"isBase": false
+				},
+		"RUB": {
+			"name": "RUB",
+			"longName": "Russia Ruble",
+			"flagImage": "flags/russia-flag-icon-32.png",
+			"isBase": false
+			},
+		"AUX": {
+			},
+		"AUD": {
+			"name": "AUD",
+			"longName": "Australian Dollar",
+			"flagImage": "flags/australia-flag-icon-32.png",
+			"isBase": true
+			}
+}

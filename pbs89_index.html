@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+					
+		<!-- Include Bootstrap 4 CSS -->
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+		
+		<!-- Include Font Awesome 5 -->
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+		
+		
+		<title>PBS 89 — Challenge Response</title>
+
+	</head>
+	<body>
+	<!-- The Page header (a Jumbotron) -->
+	<header class="container mt-5">
+		<div class="jumbotron">
+			<h1 class=":block-4">PBS 89 Challenge Response<br><small class="text-muted">More Currency Conversion</small></h1>
+
+			<p class="lead">The challenge response for installment 89 of the <a href="https://bartb.ie/pbs" target="_blank" rel="noopener">Programming by Stealth</a> series.</p>
+		</div>
+	</header>
+
+	<!-- The main page body -->
+	<main class="container mb-5">
+	<!-- Country selection check boxes -->
+	<div class="container-fluid p-5">
+		<fieldset class="form" role="form" aria-labelledby="cb_fm_desc">
+			<legend id="cb_fm_desc">Select countries to display:</legend>
+			<form action="javascript:void(0);" id="cb_fm">
+				<div class="row form-group p-3 mb-4" id="cb_div" role="checkboxgroup" aria-labelledby="country_cbx_desc">
+					<!-- check boxes added in here by javaScript & Mustache -->
+				</div>
+				<div>
+					<button id="select_all_btn" class="btn btn-primary btn-sm mb-1 ml-2">Select All</button>
+					<button id="clear_btn" class="btn btn-primary btn-sm mb-1 ml-2">Clear</button>
+				</div>
+			</form>
+
+		</fieldset>
+	</div>
+	
+	<!-- put any errors here -->
+	<div id="output_div"></div>
+	
+
+	<!-- Nav tabs to select cards or table -->
+	<div class="row">
+		<section class="col">
+			<h3>Two Currency Views</h3>
+			<p>Currency cards allow you to view currency conversions for several countries, for varying amounts. The currency table shows currency conversion rates for all selected countries, relative to each other. Use the selection checkboxes above to choose which countries to display.</p>
+			
+			<!-- the nav controlling the panes -->
+			<nav class="nav nav-tabs nav-justified" role="tablist" id="currencyTabs">
+				<a class="nav-item nav-link active" id="card-tab" data-toggle="tab" href="#cardTab" role="tab" aria-controls="card_tab" aria-selected="true">Currency Cards</a>
+				<a class="nav-item nav-link " id="table-tab" data-toggle="tab" href="#tableTab" role="tab" aria-controls="table_tab" aria-selected="false">Currency Table</a>
+			</nav>
+			
+			<!-- The panes **************************************************** -->
+			<div class="tab-content border border-top-0 rounded-bottom px-3">
+				<!-- cards tab starts here -->
+				<div class="tab-pane active" id="cardTab" role="tabpanel" aria-labelledby="card-tab">
+					<!-- Card selection input -->
+					<div class="p-3">
+						<fieldset role="form" aria-labelledby="addCardSelectBox">
+							<legend class="h5" id="addCardSelectBox">Select currency to display</legend>
+
+							<label>
+								Currency:
+								<select class="ml-2" id="addCardSelect"></select>
+							</label>
+
+							<button id="add_btn" class="btn btn-primary btn-sm mb-1 ml-2">Add</button>
+
+						</fieldset>
+					</div>
+
+					<div class="card-deck" id="card_deck_div">
+						<!-- currency cards go here -->
+					</div>
+				</div>	<!-- end cards tab-pane -->
+				
+				<!-- table tab starts here -->
+				<div class="tab-pane " id="tableTab" role="tabpanel" aria-labelledby="table-tab">
+					<!-- currency table here -->
+					<div>
+						<button id="update_tbl_btn" class="btn btn-primary btn-sm my-3 ml-2">Update Table</button>
+					</div>
+				 	<div class="table-responsive">
+						<table class="table table-striped" id="currencyTable">
+							<!-- table header goes here -->
+							
+							<tbody class="" id="currencyTblBody">
+								<!-- table rows go here -->
+							</tbody>
+						</table>
+					</div>		<!-- end table div -->
+
+				</div>	<!-- end table tab-pane -->
+			</div>	<!-- end tab-content -->
+		</section>
+	</div>
+	
+	<!-- >%%%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+	
+	<!-- revision date container -->
+	<div class="container">
+		<div class="row">	<!-- outer container, row 8> -->
+			<div class="col-12">	<!-- outer container, col 1> -->
+				<aside class="float-right text-muted p-2 mt-5 bg-light border rounded">
+				<p class="p-1 d-inline font-weight-light align-right" style="font-size: 10pt"> Last modified on:</p>
+				<p class="d-inline font-weight-light align-right" style="font-size: 10pt">02/16/2020</p>
+				</aside>
+			</div>		<!-- outer container, end of col> -->
+		</div>		<!-- outer container, end of row 8> -->
+	</div>
+	
+	<!-- ******************************************************************* -->
+	<!-- Mustache Templates -->
+	<!-- ******************************************************************* -->
+	<!-- country selection checkbox template for Mustache -->
+	<script type="text/html" id="CountryCBTpl">
+		<div class="col-lg-1 col-md-4 col-sm-6 mb-2 form-check form-check-inline">
+			<input type="checkbox" name="country" value="{{name}}" id="country_cbx_{{name}}" class="form-check-input">
+			<label for="country_cbx_{{name}}" class="form-check-label mr-2 text-" >{{name}}<img src="{{flagImage}}" style="width: 32px;" class="ml-1"><span class="sr-only">{{longName}}</span></label>
+		</div>
+	</script>
+
+	<!-- Currency Card template for Mustache -->
+	<script type="text/html" id="CurrencyCardTpl">
+
+		<div class="card currencyCard" id="{{name}}" data-currency="{{{name}}}">
+			
+			<h2 class="card-header h5 text-center">{{longname}} <img src="{{flagImage}}" alt="{{altName}}" style="width: 32px;">
+				<button id="{{name}}_btn" type="button" class="close" data-dismiss="alert" aria-label="Dismiss"><span aria-hidden="true">&times;</span></button>
+			</h2>
+			
+			<div class="form-group text-center mt-2 ml-2">
+				<label for="{{name}}_conv_tb">Base Amt:
+					<input id="{{name}}_conv_tb" type="number" min="0" value="{{rate}}" style="width: 5.0em"/>
+				</label>
+				<button id="{{name}}_conv_btn" class="btn btn-primary btn-sm mb-1">Convert</button>
+			</div>	
+
+			<div class="card-body">
+				<ul class="list-group list-group-flush">
+					{{#rateEtc}}
+					<li class="list-group-item">
+						<img src="{{flagImage}}" alt="{{name}} flag" style="width: 16px;"> 
+						<span class="currencyRate" data-currency="{{{name}}}">{{rate}}</span>
+						<small class="text-muted">{{longname}}</small>
+					</li>
+					{{/rateEtc}}
+				</ul>
+				
+				<div class="card-footer text-muted text-center p-3" id="{{name}}_date_div" style="font-size: 10pt">For {{date}}</div>
+			</div>
+		</div>
+	</script>
+
+	<!-- Currency Table header template for Mustache -->
+	<script type="text/html" id="CurrencyTableHdrTpl">
+		<thead class="thead-primary" id="currencyTableHeader">
+			<tr class="">
+				<th class=""></th> <!-- first cell in header is always empty -->
+				
+				{{#selCountries}}
+					<th class="">{{{name}}} <img src="{{flagImage}}" alt="{{name}} flag" style="width: 32px;"  class="ml-1"></th>
+				{{/selCountries}}
+			</tr>
+		</thead>
+	</script>
+
+	<!-- Currency Table row template for Mustache -->
+	<script type="text/html" id="CurrencyTableRowTpl">
+		<tr class="Currency-table-row" id="currencyTableRow">
+			<td class="">{{{name}}} <img src="{{flagImage}}" alt="{{name}} flag" style="width: 32px;"  class="ml-1"></td>
+
+			{{#selCntryRates}}
+				<td class="">{{{.}}}</td>
+			{{/selCntryRates}}
+		</tr>
+	</script>
+	
+	<!-- Currency table caption -->
+	<script type="text/html" id="CurrencyTableCaptionTpl">
+		<caption class="">Foreign exchange rates published by the <a href="https://www.ecb.europa.eu/stats/policy_and_exchange_rates/euro_reference_exchange_rates/html/index.en.html">European Central Bank</a> (ECB) on {{.}}. 
+		</caption>
+	</script>
+
+	</main>
+	</body>
+	
+	<!-- Import the is.js micro checking library -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/is_js/0.9.0/is.min.js" integrity="sha256-lnJeulOa3e5IO2EzHr8jKJ3CbT80MBwkS5a+n2ooIr4=" crossorigin="anonymous"></script>
+
+	<!-- Include Bootstrap JavaScript from CDNs -->
+	<script src="https://code.jquery.com/jquery-3.4.0.min.js" integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg=" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+
+	<!-- Include Mustache.js -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js" integrity="sha256-srhz/t0GOrmVGZryG24MVDyFDYZpvUH2+dnJ8FbpGi0=" crossorigin="anonymous"></script>
+
+	<!-- Custom JS Code -->
+	<script type="text/javascript">
+	// ******************************************************
+	// Global variables
+	// ******************************************************
+	let errData = 0;		// stash error object here
+	
+	// variables needed for display
+	let RATES = {};			// array of exchange rates
+	let countryDataFile = {};	// country data read from file
+	let countryDict = {};		// dictionary of countries we can display
+			// fields:
+			//	countryDict[].name = country code
+			//	countryDict[].longName = currency long name
+			//	countryDict[].flagImage = directory path to flag image
+			//	countryDict[].defaultDisplay = TRUE if this country selected by default
+			//	countryDict[].selected = TRUE if user has selected this card
+			//	countryDict[].hasCard = TRUE if this country has a card displayed
+			//	countryDict[].baseRate = currency rate against BASECOUNTRY (USD)
+			//	countryDict[].rate = current card rate (need?)
+
+	let tableHeaderInfo = "";	// rendered Mustache data
+	let tableRowInfo = "";		// rendered Mustache data
+	let tableCaptionInfo = "";	// rendered Mustache data for table caption
+
+	let countryCount = 0;	// number of cards displayed
+
+	let ecbData = 0;
+	let xx1 = {};
+	let xx2 = {};
+	let xx3 = {};
+	let xx4 = {};
+	let selection = {};
+	let newTab = {};
+	let oldTab = {};
+
+	// ******************************************************
+	// a jQuery Document Ready Event Handler
+	// ******************************************************
+	$(async function(){
+	
+	// constants
+	const BASECOUNTRY = "USD";		// get exchange rates relative to US dollar
+	const BASE_RATE = 1.0;			// default base conversion rate
+	const MAX_COUNTRIES = 5;		// maximum number of cards we allow to display
+	const ERRMSG = 0;
+	const PRECISION = 3;			// number of decimal places of rate to display
+
+	
+	const UNKNOWN_NAME = "UNK";
+	const UNKNOWN_LONG_NAME = "<unknown>";
+	const UNKNOWN_FLAG_IMAGE_FILE = "flags/unknown.png";
+	const UNK_COUNTRY_DATA = {
+		"UNK": {
+			"name": "UNK",
+			"longname": "UNKNOWN COUNTRY",
+			"flagImage": UNKNOWN_FLAG_IMAGE_FILE
+			}
+	};
+	
+	const $outputDiv = $('#output_div');			// where to put error/status messages
+	const $CB_DIV = $('#cb_div');					// where to put check boxes
+	const $SELECT_ALL_BTN = $('#select_all_btn');	// select all button widget
+	const $CLEAR_BTN = $('#clear_btn');				// clear button widget
+	
+	const $COUNTRY_SELECT = $('#addCardSelect');	// country select list goes here
+	const $CARD_DECK = $('#card_deck_div');			// card deck div 
+	const $ADD_CARD_BTN = $('#add_btn');			// add country card button widget
+
+	const $UPDATE_TBL_BTN = $('#update_tbl_btn');	// update table button widget
+	const $CURRENCYTBL = $('#currencyTable');		// currency table
+
+	const tableTabID = "table-tab";
+	const cardTabID = "card-tab";
+	let activeTab = cardTabID;		// name of active tab, change this if default active tab changes
+
+	// ******************************************************
+	// helper functions
+	// ******************************************************
+	// ========================================================
+	// Error Display functions
+	// ========================================================
+	// --------------------------------------
+	// Extract file/URL data from error data -->
+	// IN: error object from catch
+	// OUT: string
+	// --------------------------------------
+	function parseErrorResponse (errObj) {
+		//console.log (`PER: error statusText is ${errObj.statusText}`);
+		//console.log (`PER: error responseText is ${errObj.responseText}`);
+		let s1 = "";
+		let ss1 = [];
+		let ss2 = [];
+		try {
+			s1 = errObj.responseText;
+			ss1 = s1.split("<p>");		// remove first part of error response
+			ss2 = ss1[1].split("</p>");	// remove last part of error response
+		} catch {
+			ss2[0] = errObj.responseText;
+		}
+		console.log (`PER: ${ss2}`);
+		
+		return ss2[0];
+	}
+	
+	// --------------------------------------------
+	// Provide error response & display message -->
+	// IN: error object from catch, operation text to go in error message
+	// OUT: resulting error message
+	// --------------------------------------
+	function processErrorCondition (errD, opText, errSource) {
+		errData = errD;		// put error object in global variable for console access
+		errDetail = "";
+		
+		console.log(`PEC: In catch`);
+		console.log(`PEC: errData: ${errD}, type is ${typeof errD}`);
+
+		// if no responseText
+		if (errD.responseText == undefined) {
+
+			//if no responseText, try statusText, if that's not there, use message object as is
+			if (errD.statusText == undefined) {
+				errDetail = errD;			// use error return as is
+			} else {
+				errDetail = errD.statusText;
+			}
+
+		} else {	// if is a file error
+			errDetail = parseErrorResponse(errD);	// extract file name from error data
+		}
+		console.log(`PEC: Promises rejected: ${errDetail}`);
+
+		displayStatusMessage(errSource, errDetail, opText, ERRMSG);
+		
+		return errDetail;
+	}
+
+	// --------------------------------------
+	// display primary and error messages -->
+	// --------------------------------------
+	function displayStatusMessage(sTxt, eTxt, fType, mType){
+		
+		console.log (`DSM: error is ${eTxt}`);
+		// <!-- primary message Mustache template
+		const priTemplate = "<div class=\"alert alert-primary border border-primary rounded mb-3\"> {{message}} {{> closeBtn}}</div>";
+		// <!-- error message Mustache template partials -->
+		const errTemplate = "<div class=\"alert alert-danger border border-danger rounded mb-3\"> {{message}} {{> closeBtn}}</div>"
+		// <!-- error message Mustache template partials -->
+		const partials = "closeBtn: \'<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\'";
+
+		let ajaxErrMsg = "";
+		let tmplt = 0;
+
+		// remove any existing messages
+		//$outputDiv.empty().text(' ');		// clear out the previous error messages
+
+		if (mType ==ERRMSG) {
+			// if an error message
+			tmplt = errTemplate;
+			ajaxErrMsg = `Error (${fType}): status: (${sTxt}), Error message = ${eTxt}`;
+
+		} else {
+			// if a primary message
+			tmplt = priTemplate;
+			ajaxErrMsg = `Alert (${fType}): status: OK, Message = ${eTxt}`;
+
+		}
+		//window.alert (ajaxErrMsg);
+		//console.log (`DSM ERROR: ${ajaxErrMsg}`);
+		
+		const $alert = $(Mustache.render(tmplt, { message: ajaxErrMsg }, partials));
+		$alert.alert({});
+		console.log ("DSM: append message to output div ");
+		$outputDiv.append($alert);
+
+		return;
+	}
+	
+	// ========================================================
+	// Data Organization functions
+	// ========================================================
+	// --------------------------------------
+	// Fetch country data from local file with AJAX.
+	// IN: nothing
+	// OUT: Promise.all promise
+	// ------------------------------------------------
+	async function loadCountryData () {
+		console.log ("Enter LCD");
+
+		// fetch country data
+		const prm3 = $.ajax({
+					url: "data/Countries.txt", 		// REQUIRED
+					method: 'GET', 		// the HTTP method to use, defaults to GET
+					cache: false, 		// whether or not to allow caching, defaults to true
+					data: { },			// the form data to send to the server as a dictionary
+					dataType: 'text'	// one of 'text', 'html', or 'json' (for now)
+				});
+
+		console.log (`LCD: after ajax calls, before return with Promise.all.`);
+		const prArray = [prm3];	// make array of promises
+
+		return Promise.all(prArray);	// return 1 promise for all
+
+	}
+
+	// -------------------------------------------------------
+	// Fetch currency conversion data from ECB website.    -->
+	// IN: base country array
+	// OUT: array of promises for fetching rate data
+	// -------------------------------------------------------
+	async function loadExchangeRates (country) {
+		console.log (`Enter LER with ${country}`);
+		//console.log (cntriesObj);
+		
+		const ecbPromises = [];
+
+		//console.log (`LER: request data for country ${country}`);
+
+		// create URL
+		//console.log (`LER: create URL for ${country}`);
+		const ecbUrl = "https://api.exchangeratesapi.io/latest?base="+country;
+
+		//console.log (`LER: URL is ${ecbUrl}`);
+		
+		// do the AJAX & save promise in array
+		const ecbPromise = $.ajax({
+			url: ecbUrl,
+			method: 'GET',
+			cache: false, 		// whether or not to allow caching, defaults to true
+			dataType: 'json'
+		}).then(function(rates){
+			return rates; // pass the rates through
+			}
+		);
+		ecbPromises.push(ecbPromise);
+
+		//console.log ("LER: after ajax call");
+		//console.log (`Exit LER`);
+
+		return Promise.all(ecbPromises);
+		}
+
+	// --------------------------------------------------------------------
+	// Build country data dictionary from country data & exchange rates -->
+	// IN: country data read from external file, exchange rates from ECB
+	// OUT: dictionary of country data
+	// --------------------------------------------------------------------
+	function BuildCountyData(CDF, rateData){
+		console.log ("Enter BCD...");
+		
+		// validate input data. Make sure there's something there
+		if ((CDF["USD"].name == undefined) || (rateData == undefined)) {
+			throw new TypeError(`No exchange rate data or country data available`);
+		}
+		
+		// make an empty dictionary
+		let newDict = {};
+				
+		// for each country in country data file
+		Object.keys(CDF).sort().forEach(function(ctyKey){
+			
+			let cty = CDF[ctyKey];		// use key to get actual data
+
+			// create a new country object
+			let cObj = {};
+
+			if (cty.name == undefined) {
+				// handle case where no country data defined
+				// fill object with dummy data
+				cObj.name = ctyKey;
+				cObj.longName = UNKNOWN_LONG_NAME;
+				cObj.flagImage = UNKNOWN_FLAG_IMAGE_FILE;
+				cObj.baseRate = cObj.rate = 1.0;
+				cObj.selected = false;	// don't display countries with bad data
+				cObj.hasCard = false;	// not a base country with card
+
+				console.log (`BCD: error country ${cty.name}, ctyKey is ${ctyKey}`);
+
+			} else {
+				// copy in name, long name, & flag image link
+				cObj.name = cty.name;
+				cObj.longName = cty.longName;
+				cObj.flagImage = cty.flagImage;
+				cObj.selected = cty.defaultDisplay;	// display this country on load?
+				cObj.hasCard = false;	// not a base country with card yet
+			
+				// fetch rate from RATES & add to country object
+				cObj.baseRate = cObj.rate = rateData[cObj.name];
+			}
+						
+			// add to dictionary
+			newDict[cObj.name] = cObj;
+		
+		});			// end for
+		console.log ("BCD Exit");
+		return newDict;		// return completed dictionary
+	}
+
+	// --------------------------------------
+	// Build country selection checkboxes -->
+	// take selected country data read from external file & 
+	//		create set of checkboxes
+	// IN: dictionary element from JSON Object Array from local file
+	// OUT: base country HTML data keyed to Mustache template
+	// --------------------------------------
+	function buildCountryCBSelection (cDict) {
+	
+		// loop over each country, using key
+		Object.keys(cDict).sort().forEach(function(cntry){
+			//console.log (`BCS: Add CB (key ${cntry}) for ${fileData[cntry].name}`);
+			let countryObj = cDict[cntry];
+			//xx1 = countryObj;
+
+			// if have valid data for this country, add a check box
+			if ((countryObj.name != undefined) && (countryObj.flagImage != undefined)) {
+				//console.log (`BCS: add check box for ${countryObj.name}`);
+
+				const $cb = $(Mustache.render($('#CountryCBTpl').html(), countryObj));
+
+				$CB_DIV.append($cb);		// add to display page
+				// if this country is displayed (by default), set this CB as checked
+				if (countryObj.selected) {
+					$(`#country_cbx_${countryObj.name}`).prop('checked',true)		// make this CB checked
+				}
+				
+//				$cb.change(function() {
+//					console.log (`checkbox changed: country_cbx_${countryObj.name}`);
+//				})
+			}
+			
+		});
+	};
+
+	// -------------------------------------------------------
+	// Update dictionary from country selection checkboxes -->
+	// IN: dictionary of country data
+	// OUT: updated dictionary, number of countries selected
+	//
+	// NOTE: The way this works means that whatever countries 
+	//	are selected in checkboxes are displayed for both cards
+	//	and table. We can change this by having 2 selection 
+	//	dictionaries for cards & table, then adding the selection
+	//	dictonary as an input parameter.
+	// -------------------------------------------------------
+	function updateCountryDictionary (cDict) {
+
+		let cCnt = 0;
+		// get current check box selections
+		let $countryOptions = $('#cb_div input[name="country"]');
+
+		selection = $countryOptions;            // put in global var so we can see it from console
+
+		// loop through all possible countries that can be selected
+		// and set display state (display or not)
+		for (let idx=0; idx < $countryOptions.length; idx++) {
+			let cObj = $countryOptions[idx];
+			let cName = cObj.value;
+
+			// If this country was selected, add its data object to selected country object
+			if (cObj.checked) {
+				//console.log (`${cName} was selected`);
+
+				cDict[cName].selected = true;
+				cCnt++;
+				    
+			} else {
+				// country is not selected, so remove it from display
+				cDict[cName].selected = false;
+
+				//console.log (`${cName} was removed`);
+			}           
+		}
+		return cCnt;		// return number of countries selected
+	}
+
+	// -------------------------------------------------------
+	// Format currency into string                         -->
+	// IN: string with 3-character country code, currency amount
+	// OUT: string containing currency amount formatted as that 
+	//			country's currency
+	// -------------------------------------------------------
+	function formatCurrency (cc,amt) {
+		// Create our number formatter.
+		let formatter = new Intl.NumberFormat('en-US', {
+			style: 'currency',
+			currency: cc,
+			currencyDisplay: 'symbol'
+		});
+
+		return formatter.format (amt);
+	}
+
+	// ========================================================
+	// Table Display functions
+	// ========================================================
+	// --------------------------------------------------------
+	// Build object for table header from country dictionary ->
+	// IN: dictionary of country data
+	// OUT: object containing array of country data for Mustache template for currency
+	//			table header
+	// --------------------------------------------------------
+	function BuildTableHeaderData(cDict){
+		//console.log ("Enter BTHD...");
+		
+		let newObj = {};
+		let newArray = [];		// create an empty array
+		
+		// for each country in country data file
+		Object.keys(cDict).forEach(function(ctyKey){
+			
+			let cty = cDict[ctyKey];		// use key to get actual data
+			
+			if (cty.selected){		// if displaying this country in table
+				let dObj = {};
+				
+				dObj.name = cty.name;
+				dObj.flagImage = cty.flagImage;
+				dObj.selected = cty.selected;
+				
+				newArray.push(dObj);
+			}
+			
+		});
+		
+		newObj.selCountries = newArray;
+		
+		return newObj;
+	};
+	
+	// -------------------------------------------------------
+	// Make currency table                                 -->
+	// IN: dictionary of country data
+	// OUT: currency table added to DOM
+	// -------------------------------------------------------
+	function makeCurrencyTable(cDict){
+		
+		$('#currencyTableHeader').remove();	// remove old table header
+		$('.Currency-table-row').remove();	// remove all old table rows
+		
+		// first add table header
+		let tableHeaderData = BuildTableHeaderData(cDict);	
+		//xx1 = tableHeaderData;
+		
+		//console.log ('MCT: Mustache render table data into html');
+		tableHeaderInfo = $(Mustache.render($('#CurrencyTableHdrTpl').html(), tableHeaderData));
+		//xx2 = tableHeaderInfo.html();
+
+		// Append the html to the table
+		//console.log ('MCT: append table header to table');
+		$CURRENCYTBL.append(tableHeaderInfo);		// add it to display
+
+		// next, add table rows
+		let adjRate = 0;
+
+		Object.keys(countryDict).forEach(function(ctyKey){
+			
+			let cty1 = cDict[ctyKey];		// use key to get actual data
+			
+			// skip this country's row if hidden
+			if (cty1.selected) {
+			
+				let rArray = [];
+				
+				Object.keys(cDict).forEach(function(ctyKey2){
+					let cty2 = cDict[ctyKey2];		// use key to get actual data
+					
+					// skip this country's rate cell if hidden
+					if (cty2.selected) {
+						//adjRate = (cty2.baseRate / cty1.baseRate).toFixed(PRECISION);
+						adjRateStr = formatCurrency(cty2.name, (cty2.baseRate / cty1.baseRate));
+						rArray.push(adjRateStr);
+					}
+				});
+				
+				// make an object: countryinfo, array of rates relatie to that country
+
+				let dObj = {};
+				
+				dObj.name = cty1.name;
+				dObj.flagImage = cty1.flagImage;
+				dObj.selCntryRates = rArray;
+				
+				//xx1 = dObj;
+				
+				// Feed row data object to Mustache
+				tableRowInfo = $(Mustache.render($('#CurrencyTableRowTpl').html(), dObj));
+				//xx2 = tableRowInfo;
+				
+				// add row to table
+				$CURRENCYTBL.append(tableRowInfo);
+			}
+		});
+		
+		//console.log ("MCT: exiting.");
+	}
+	
+	// ========================================================
+	// Card Display functions
+	// ========================================================
+	// --------------------------------------------------------
+	// Build country select list from country data read     -->
+	// IN: dictionary of country data
+	// OUT: add country card select list set in HTML
+	// --------------------------------------------------------
+	function buildCountryCardSelectList (cDict) {
+		console.log ("Enter BCSL...");
+		
+		// do some error checking here
+		// input must be object of array
+		// is input an object? And does it have some stuff in it?
+		//console.log ("BCSL: check dataObj");
+		if ((typeof cDict != "object") || (Object.keys(cDict).length) <= 0) {
+			throw new TypeError('(BCSL) Countries file has bad data');
+		}
+
+		// loop through each country read from data file, in alpha order
+		Object.keys(cDict).sort().forEach(function(cntry){
+			let countryObj = cDict[cntry];
+
+			// if a valid country here, add check box to display
+			if ((countryObj.name != undefined) && (countryObj.flagImage != undefined)) {
+				let cn = countryObj.name;			// get short name
+				let clong = countryObj.longName;	// get long name
+
+				// add country as select option
+				$COUNTRY_SELECT.append($('<option>').text(clong).val(cn));
+
+			} else {
+				//console.log (`BCSL: discard a country: ${countryObj.name}`);
+			}
+		});
+		
+		//console.log (`BCSL: ${dataObj[0].name}`); 	// uncomment to make error
+		//console.log ("Exit BCSL");
+	}
+
+	// ------------------------------------------
+	// Click function for dismissing a card   -->
+	// IN: base country object from countries array
+	// OUT: card removed
+	// ------------------------------------------
+	function dismissCountryCard(event, arg) {
+		//console.log (`DCC: Enter with p1 as ${event}`);
+		//xx4 = event;
+		
+		const co = event.data;	// get data from event
+		
+		if (countryCount > 0) {
+			--countryCount;		// decrement # countries displayed
+		}
+		
+		// update country dictionary: country not a base in a card
+		countryDict[co.name].hasCard = false;
+		countryDict[co.name].rate = countryDict[co.name].baseRate;	// reset displayed rate back to base rate
+		console.log (`DCC: Dismiss ${co.name}`);
+		$(`#${co.name}`).remove();
+	};
+
+	// --------------------------------------
+	// Click function for card convert button   -->
+	// IN: base country object built for Mustache
+	// OUT: new card with adjusted rates displayed
+	// --------------------------------------
+	function convertCardRates(event, arg) {
+		const co = event.data;	// get data (country code) from event
+		xx2 = co;
+
+		$outputDiv.empty();		// clear any previous errors
+
+		// fetch base rate from text box
+		let newRate = $(`#${co.name}_conv_tb`).val();
+		console.log (`CNVclick: New base rate for ${co.name} card is ${newRate}`);
+		
+		// error check new rate
+		try {
+			if ((newRate <= 0) || (newRate === "")){
+				if (newRate === "") {
+					newRate = '<NAN>';
+				}
+				throw new TypeError(`${newRate} is not a valid conversion rate`);
+			}
+		
+			//console.log ('CNVclick: carry on processing');
+			co.rate = newRate;		// update this country card's base conversion rate
+			xx4 = co;		// save for debug
+			
+			// get array of all currencies in current card/countryObj
+			let cardLines = $(`.currencyCard[data-currency="${co.name}"] .currencyRate`);
+			
+			// for each card line, 
+			for (let idx=0; idx < cardLines.length; idx++){
+				// point to card line within base country object
+				let clo = co.rateEtc[idx];
+				xx1 = clo;
+				
+				// convert rates in country object
+				// calculate rate for this country within card, limit precision
+				clo.rate = ((countryDict[clo.name].rate / countryDict[co.name].rate) * newRate).toFixed(PRECISION);
+
+				// create string with new rate
+				//let str1 = `${clo.name} : ${clo.rate}`;
+				let str1 = formatCurrency(clo.name, clo.rate);
+				
+				//console.log (`CCR: for ${clo.name}, new rate is ${str1}`);
+				//console.log (`CCR:   from base: ${countryDict[clo.name].rate}, entered rate: ${newRate}`);
+				// update jQuery object with string of new rate
+				cardLines[idx].textContent = str1;		
+			}
+		} catch (err) {
+			const errDetail = processErrorCondition (err,"user input", "user");
+			console.log ('(CNV) User entered invalid conversion rate');
+		}
+	}
+
+	// ----------------------------------------
+	// Build card data object for Mustache. -->
+	// take selected country data & create card object for Mustache
+	// IN: dictionary element from country dictionary
+	// OUT: base country HTML data keyed to Mustache template
+	// ----------------------------------------
+	function buildCardData (countryObj) {	// for selected country
+		//console.log ("Enter BCD...");
+
+		const cntry = countryObj.name;
+		console.log (`BCD: add country ${cntry}`);
+
+		// Create base country object with
+		//	name, alt flag name (name + " flag"), flag file path
+		let bObj = new Object;			// create base country object
+		bObj.name = countryObj.name;	// add name
+		bObj.longname = countryObj.longName;		// add long name for currency
+		bObj.altName = countryObj.name + " flag";	// add alt-name
+		bObj.flagImage = countryObj.flagImage;		// add flag file name
+		bObj.rate = BASE_RATE;			// exchange rate against BASECOUNTRY
+		
+		// Need to create rates array for this base country
+		let rArray = [];				// Create empty rates array
+				
+		// For each country data object
+		xx3 = Object.values(countryDict).sort();
+		Object.keys(countryDict).sort().forEach(function(ctyKey){
+
+			let cty2 = countryDict[ctyKey];		// use key to get actual data
+			xx1 = cty2;
+
+			// don't put base country in rates array because duh it's the base
+			if (cty2.name != bObj.name){			// if base country NE to current country name in loop
+				if (cty2.selected) {				// if country is selected
+					// create rate object from this country
+					let rObj = new Object;		// create empty rate object
+					rObj.name = cty2.name;		// populate with country data
+					rObj.longname = cty2.longName;
+					rObj.flagImage = cty2.flagImage;
+					
+					// format exchange rate with correct currency, etc.
+
+					//rObj.rate = (cty2.baseRate/countryObj.rate).toFixed(PRECISION);	// exchange rate against base country
+					rObj.rate = formatCurrency(rObj.name, (cty2.baseRate/countryObj.rate));
+
+					//console.log (`BCD: cntry is ${cntry}, li name is ${rObj.name}, rate is ${rObj.rate}`);
+
+					//	add new rate object to rates array
+					rArray.push(rObj);
+				}
+			}		// endif
+		});		// end for
+		// now have a rates array. put it in base country object
+		bObj.rateEtc = rArray;
+		
+		bObj.date = RATES.date;		// use date from ECB for card footer
+
+		xx2 = bObj;
+		return bObj;
+	}
+
+	// ========================================================
+	// Button Click Event Handlers
+	// ========================================================
+	//---------------------------------------------------
+	// add a click handler to the Select All button
+	//---------------------------------------------------
+	$SELECT_ALL_BTN.click(function(){
+		console.log ('select all button clicked');
+		let $countryOptions = $('#cb_div input[name="country"]');
+
+		selection = $countryOptions;		// put in global var so we can see it from console
+					
+		// loop through all possible countries that can be selected
+		for (let idx=0; idx < $countryOptions.length; idx++) {
+			let cObj = $countryOptions[idx];
+			let cName = cObj.value;
+
+			cObj.checked = true;			// make this CB checked
+		}
+		return;
+
+	});
+	
+	//---------------------------------------------------
+	// add a click handler to the Clear Selection button
+	//---------------------------------------------------
+	$CLEAR_BTN.click(function(){
+		console.log ('clear button clicked');
+
+		let $countryOptions = $('#cb_div input[name="country"]');
+
+		selection = $countryOptions;		// put in global var so we can see it from console
+	
+		// if have some selections, clear them
+		if($countryOptions.filter(':checked').length > 1){
+			// loop through all possible countries that can be selected
+			for (let idx=0; idx < $countryOptions.length; idx++) {
+				let cObj = $countryOptions[idx];
+				// If this country was selected, add its data object to selected country array
+				if (cObj.checked) {
+					cObj.checked = false;
+					//console.log (`${cObj.value} was cleared`);
+				}
+			}
+			
+			// empty selection dictionary
+			selectedCountries = {};
+		}
+
+	});
+
+	//---------------------------------------------------
+	// add a click handler to the Card Add button
+	//---------------------------------------------------
+	$ADD_CARD_BTN.click(function(){
+		// clear any previous errors
+		$outputDiv.empty();
+		
+		let numCountriesSelected = updateCountryDictionary(countryDict);	// set display field based on checkboxes selected
+		console.log (`ACB: ${numCountriesSelected} selected for card`);
+
+		if (numCountriesSelected < 0) return;				// look at checkboxes & create dictionary of selected countries
+
+		//console.log ('AC: carry on processing');
+		newCountry = $COUNTRY_SELECT.val();		// get selected country's code from select widget
+		
+		let newCountryLong = countryDict[newCountry].longName;
+		//console.log (`ACB: Val is ${newCountry}, country selected is ${newCountryLong}`);
+		
+		try {
+			//console.log (`ACB: this country has card? ${countryDict[newCountry].hasCard}`);
+			
+			if (countryDict[newCountry].hasCard) {
+				throw new TypeError(`Selected country currency, ${newCountryLong}, is already displayed`);
+			}
+			
+			// verify don't have too many cards (error if current # of cards EQ # countries in selectedCountries, IOW # keys)
+			// throw error if yes
+			if (countryCount >= MAX_COUNTRIES) {
+				throw new TypeError('Maximum number of currencies already displayed');
+			}
+			
+			countryCount++;			// keep track of how many country currencies are displayed
+			
+
+			// create the data card
+			console.log ('create the data card');
+			countryDict[newCountry].hasCard = true;	// set this country has base country card
+			let countryObj = buildCardData (countryDict[newCountry]);
+			xx1 = countryObj;		// debug
+			
+			// Render data object into html using Mustache
+			//console.log ('Mustache render card data into html');
+			cardDeckInfo = $(Mustache.render($('#CurrencyCardTpl').html(), countryObj));
+			
+			// Append the html to the card deck
+			//console.log ('append html to card deck');
+			$CARD_DECK.append(cardDeckInfo);		// add it to display
+
+			//+++++++++++++++++++++++++++++++++++++++++++
+			// add a click handler to the dismiss/close button
+			//+++++++++++++++++++++++++++++++++++++++++++
+			// set up the dismiss button response
+			// add dismiss button click function to each card
+			//console.log(`Add click function for ${newCountry}`);
+			$(`#${newCountry}_btn`).click(countryObj, dismissCountryCard);
+			
+			//+++++++++++++++++++++++++++++++++++++++++++
+			// add a click handler to the convert for new base rate button
+			//+++++++++++++++++++++++++++++++++++++++++++
+			//console.log (`Add convert click function for ${countryObj.name}`)
+			$(`#${countryObj.name}_conv_btn`).click(countryObj, convertCardRates);			
+
+		} catch (err) {
+			const errDetail = processErrorCondition (err,"user input", "user");
+			console.log (`Unable to process user input: ${errDetail}`);
+		}
+
+	});			// ------ end of Add click function
+
+	//---------------------------------------------------
+	// add a click handler to the Update Table button
+	//---------------------------------------------------
+	$UPDATE_TBL_BTN.click(function(){
+		console.log ('update table button clicked');
+		
+		let cnt = updateCountryDictionary(countryDict);	// set display field based on checkboxes selected
+		
+		makeCurrencyTable(countryDict);	// re-display the table
+
+		return;
+
+	});
+
+	// ******************************************************
+	// Main Document Handler
+	// ******************************************************	
+	console.log ("start DOM");
+	
+	//---------------------------------------------------
+	// Initialization
+	//---------------------------------------------------
+	
+	//------------------------------------------
+	// Fetch external data with AJAX in parallel	
+	//------------------------------------------
+	// Call function to fetch country data & build arrays
+	// Wait on promise completion
+	try{
+		console.log ("call LCD");
+		let fileData = [];
+		fileData = await loadCountryData();
+		console.log ("return from LCD & await load data");
+
+		// convert input string to JSON object
+		countryDataFile = JSON.parse(fileData[0]);
+	} catch (err) {
+		const errDetail = processErrorCondition (err,"get country data", "AJAX");
+		console.log (`Unable to get country data: ${errDetail}`);
+
+		// define a dummy template & country data
+		cardTemplateStr = "";
+		countryDataFile = UNK_COUNTRY_DATA;
+	} 
+
+	// get rate info with USD as base from ECB
+	try{
+		console.log ("call LER");
+		ecbData = await loadExchangeRates(BASECOUNTRY);
+		console.log ("return from await exchange rates");
+		RATES = ecbData[0];
+		//ecbData = rates;
+
+	} catch (err) {
+		const errDetail = processErrorCondition (err,`get ECB data for ${BASECOUNTRY}`, "AJAX");
+		console.log (`Unable to get ECB data: ${errDetail}`);		
+	} 
+
+	try {
+		// Build country data dictionary
+		countryDict = BuildCountyData(countryDataFile, RATES.rates);
+				
+		// add country selection 
+		buildCountryCBSelection(countryDict);
+
+
+	} catch (err) {
+		const errDetail = processErrorCondition (err,`build country data dictionary`, "AJAX");
+		console.log (`Invalid country data: ${errDetail}`);		
+	}
+	
+	//---------------------------------------------------
+	// Build & display currency cards
+	//---------------------------------------------------
+	// Build select list for choosing what countries are base
+	console.log ("call buildCountryCardSelectList");
+	buildCountryCardSelectList(countryDict);
+
+	//---------------------------------------------------
+	// Build & display currency table
+	//---------------------------------------------------
+	// First add ECB date to bottom of table
+	tableCaptionInfo = $(Mustache.render($('#CurrencyTableCaptionTpl').html(), RATES.date));
+	//console.log (`Todays date is ${RATES.date}`);
+	//console.log (`put date: ${tableCaptionInfo}`);
+	$CURRENCYTBL.append(tableCaptionInfo);
+
+	// Render country data into table using Mustache -> turn into makeCurrencyTable function
+	makeCurrencyTable(countryDict);
+
+	// set handler for when checkboxes change
+	$('input[type="checkbox"]', $CB_DIV).on('input', function(){
+		//console.log ('a checkbox changed');
+		// if table pane displayed, re-do table
+		if (activeTab == tableTabID) {
+			let cnt = updateCountryDictionary(countryDict);	// set display field based on checkboxes selected
+			makeCurrencyTable(countryDict);		// build & display table
+		}
+	}).trigger('input');
+
+	// set up tab pane show event handler
+	$('a[data-toggle="tab"]').on('show.bs.tab', function (e) {
+		newTab = e.target 			// newly activated tab
+		oldTab = e.relatedTarget	// previous active tab
+		
+		if (newTab.id == tableTabID) {
+			//console.log (`showing table tab: ${newTab.id}`);
+			
+			activeTab = newTab.id;
+			// showing currency table. Re-make table per current country selections
+			let cnt = updateCountryDictionary(countryDict);	// set display field based on checkboxes selected
+			makeCurrencyTable(countryDict);		// build & display table
+
+		} else {
+			//console.log (`hiding table tab: ${oldTab.id}`);
+			activeTab = oldTab.id;
+		}
+	});		// end of tab pane event handler
+	
+	});
+	</script>
+		
+</html>

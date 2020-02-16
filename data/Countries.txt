@@ -1,0 +1,90 @@
+{
+		"USD": {
+			"name": "USD",
+			"longName": "US Dollar",
+			"flagImage": "flags/united-states-of-america-flag-icon-32.png",
+			"defaultDisplay": "true"
+			},
+		"EUR": {
+			"name": "EUR",
+			"longName": "Euro",
+			"flagImage": "flags/EU.png"
+			},
+		"JPY": {
+			"name": "JPY",
+			"longName": "Japan Yen",
+			"flagImage": "flags/japan-flag.png"
+			},
+		"GBP": {
+			"name": "GBP",
+			"longName": "British Pound",
+			"flagImage": "flags/united-kingdom-flag-icon-32.png"
+			},
+		"CHF": {
+				"name": "CHF",
+				"longName": "Swiss Franc",
+				"flagImage": "flags/switzerland-flag-icon-32.png"
+				},
+		"RUB": {
+			"name": "RUB",
+			"longName": "Russia Ruble",
+			"flagImage": "flags/russia-flag-icon-32.png",
+			"defaultDisplay": "true"
+			},
+		"AUX": {
+			},
+		"AUD": {
+			"name": "AUD",
+			"longName": "Australian Dollar",
+			"flagImage": "flags/australia-flag-icon-32.png"
+			},
+		"NOK": {
+			"name": "NOK",
+			"longName": "Norway Kroner",
+			"flagImage": "flags/norway-flag-icon-64.png"
+			},
+		"CAD": {
+			"name": "CAD",
+			"longName": "Canadian Dollar",
+			"flagImage": "flags/canada-flag-icon-64.png"
+			},
+		"BRL": {
+			"name": "BRL",
+			"longName": "Brazilian Real",
+			"flagImage": "flags/brazil-flag.png",
+			"defaultDisplay": "true"
+			},
+		"KRW": {
+			"name": "KRW",
+			"longName": "South Korea Won",
+			"flagImage": "flags/south-korea-flag.png"
+			},
+		"MXN": {
+			"name": "MXN",
+			"longName": "Mexican Peso",
+			"flagImage": "flags/mexico-flag.png"
+			},
+		"ILS": {
+			"name": "ILS",
+			"longName": "Israeli Shekel",
+			"flagImage": "flags/israel-flag.png"
+			},
+		"ISK": {
+			"name": "ISK",
+			"longName": "Icelandic Krona",
+			"flagImage": "flags/iceland-flag.png",
+			"defaultDisplay": "true"
+			},
+		"SGD": {
+			"name": "SGD",
+			"longName": "Singapore Dollar",
+			"flagImage": "flags/singapore-flag.png"
+			},
+		"PHP": {
+			"name": "PHP",
+			"longName": "Philippine Peso",
+			"flagImage": "flags/philippines-flag-icon-64.png"
+			}
+
+
+}
