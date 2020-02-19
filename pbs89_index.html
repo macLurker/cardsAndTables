@@ -1,7 +1,18 @@
 <!DOCTYPE html>
 <html>
+	<style>
+	main {
+		background-color: #f2f2f2f2;
+	}
+	header {
+		background-color: #f2f2f2f2;
+	}
+
+	</style>
+
 	<head>
 		<meta charset="UTF-8">
+		
 					
 		<!-- Include Bootstrap 4 CSS -->
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -16,16 +27,19 @@
 	</head>
 	<body>
 	<!-- The Page header (a Jumbotron) -->
-	<header class="container mt-5">
-		<div class="jumbotron">
+	<header class="container">
+	<!-- 	<div class="jumbotron"> -->
+			<br>
 			<h1 class=":block-4">PBS 89 Challenge Response<br><small class="text-muted">More Currency Conversion</small></h1>
 
 			<p class="lead">The challenge response for installment 89 of the <a href="https://bartb.ie/pbs" target="_blank" rel="noopener">Programming by Stealth</a> series.</p>
-		</div>
+			<br>
+	<!--	</div> -->
 	</header>
 
 	<!-- The main page body -->
 	<main class="container mb-5">
+
 	<!-- Country selection check boxes -->
 	<div class="container-fluid p-5">
 		<fieldset class="form" role="form" aria-labelledby="cb_fm_desc">
@@ -112,7 +126,7 @@
 			<div class="col-12">	<!-- outer container, col 1> -->
 				<aside class="float-right text-muted p-2 mt-5 bg-light border rounded">
 				<p class="p-1 d-inline font-weight-light align-right" style="font-size: 10pt"> Last modified on:</p>
-				<p class="d-inline font-weight-light align-right" style="font-size: 10pt">02/16/2020</p>
+				<p class="d-inline font-weight-light align-right" style="font-size: 10pt">02/18/2020</p>
 				</aside>
 			</div>		<!-- outer container, end of col> -->
 		</div>		<!-- outer container, end of row 8> -->
@@ -132,7 +146,7 @@
 	<!-- Currency Card template for Mustache -->
 	<script type="text/html" id="CurrencyCardTpl">
 
-		<div class="card currencyCard" id="{{name}}" data-currency="{{{name}}}">
+		<div class="card currencyCard bg-light" id="{{name}}" data-currency="{{{name}}}">
 			
 			<h2 class="card-header h5 text-center">{{longname}} <img src="{{flagImage}}" alt="{{altName}}" style="width: 32px;">
 				<button id="{{name}}_btn" type="button" class="close" data-dismiss="alert" aria-label="Dismiss"><span aria-hidden="true">&times;</span></button>
@@ -148,7 +162,7 @@
 			<div class="card-body">
 				<ul class="list-group list-group-flush">
 					{{#rateEtc}}
-					<li class="list-group-item">
+					<li class="list-group-item bg-secondary text-white">
 						<img src="{{flagImage}}" alt="{{name}} flag" style="width: 16px;"> 
 						<span class="currencyRate" data-currency="{{{name}}}">{{rate}}</span>
 						<small class="text-muted">{{longname}}</small>
@@ -530,9 +544,6 @@
 					$(`#country_cbx_${countryObj.name}`).prop('checked',true)		// make this CB checked
 				}
 				
-//				$cb.change(function() {
-//					console.log (`checkbox changed: country_cbx_${countryObj.name}`);
-//				})
 			}
 			
 		});
@@ -595,6 +606,22 @@
 		});
 
 		return formatter.format (amt);
+	}
+
+	// -------------------------------------------------------
+	// Update displayed table.                             -->
+	// IN: global variables
+	// OUT: re-displayed country table, per currenct set of 
+	//		selected countries
+	// -------------------------------------------------------
+	function updateDisplayedTable() {
+		// if current nav tab pane display is the table,
+		// update the dictionary per current checkbox settings & re-make the table
+		if (activeTab == tableTabID) {
+			let cnt = updateCountryDictionary(countryDict);	// set display field based on checkboxes selected
+			makeCurrencyTable(countryDict);		// build & display table
+		}
+		return;
 	}
 
 	// ========================================================
@@ -899,6 +926,8 @@
 
 			cObj.checked = true;			// make this CB checked
 		}
+		
+		updateDisplayedTable();		// re-draw table
 		return;
 
 	});
@@ -929,6 +958,8 @@
 			selectedCountries = {};
 		}
 
+		updateDisplayedTable();		// re-draw table
+		return;
 	});
 
 	//---------------------------------------------------
@@ -991,7 +1022,12 @@
 			// add a click handler to the convert for new base rate button
 			//+++++++++++++++++++++++++++++++++++++++++++
 			//console.log (`Add convert click function for ${countryObj.name}`)
-			$(`#${countryObj.name}_conv_btn`).click(countryObj, convertCardRates);			
+			$(`#${countryObj.name}_conv_btn`).click(countryObj, convertCardRates);		
+			
+			// move keyboard focus to this (i.e. latest) card, 
+			//	specifically in the text box for new conversion rates
+			console.log (`ACB: put focus on convert text box for ${countryObj.name}`);
+			$(`#${countryObj.name}_conv_tb`).focus();	
 
 		} catch (err) {
 			const errDetail = processErrorCondition (err,"user input", "user");
@@ -1006,9 +1042,8 @@
 	$UPDATE_TBL_BTN.click(function(){
 		console.log ('update table button clicked');
 		
-		let cnt = updateCountryDictionary(countryDict);	// set display field based on checkboxes selected
-		
-		makeCurrencyTable(countryDict);	// re-display the table
+		// set display field based on checkboxes selected & re-display the table
+		updateDisplayedTable();
 
 		return;
 
@@ -1094,10 +1129,7 @@
 	$('input[type="checkbox"]', $CB_DIV).on('input', function(){
 		//console.log ('a checkbox changed');
 		// if table pane displayed, re-do table
-		if (activeTab == tableTabID) {
-			let cnt = updateCountryDictionary(countryDict);	// set display field based on checkboxes selected
-			makeCurrencyTable(countryDict);		// build & display table
-		}
+		updateDisplayedTable();
 	}).trigger('input');
 
 	// set up tab pane show event handler
@@ -1110,8 +1142,7 @@
 			
 			activeTab = newTab.id;
 			// showing currency table. Re-make table per current country selections
-			let cnt = updateCountryDictionary(countryDict);	// set display field based on checkboxes selected
-			makeCurrencyTable(countryDict);		// build & display table
+			updateDisplayedTable();
 
 		} else {
 			//console.log (`hiding table tab: ${oldTab.id}`);
